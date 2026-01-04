@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>どっちがお得？</title>
+    <style>
+        /* ==== 色の設定（変数） ==== */
+        :root {
+            /* ライトモード */
+            --bg-color: #f5f5f5;
+            --text-color: #202124;
+            --title-color: #202124;
+            --box-bg: #ffffff;
+            --box-shadow: rgba(60,64,67,0.3);
+            --border-std: #dadce0;
+            
+            --input-bg: #fff;
+            --input-text: #3c4043;
+            --input-border: #dadce0;
+            
+            --btn-bg: #fff;
+            --btn-text: #3c4043;
+            --btn-border: #dadce0;
+            --del-btn-bg: #fce8e6;
+            --del-btn-text: #c5221f;
+            
+            /* スチールブルー */
+            --calc-btn-bg: #4682B4; 
+            --calc-btn-text: #fff;
+            
+            --result-bg: #fff;
+            --winner-hl-bg: #fce8e6;
+            --winner-hl-border: #ea4335;
+            --winner-text: #ea4335;
+            --detail-text: #5f6368;
+            
+            --label-color: #5f6368;
+
+            /* モーダル（履歴画面）の色 */
+            --modal-bg: rgba(0,0,0,0.5);
+            --modal-content-bg: #fff;
+            --history-item-border: #eee;
+        }
+
+        /* ダークモード */
+        [data-theme="dark"] {
+            --bg-color: #202124;
+            --text-color: #E8EAED;
+            --title-color: #E8EAED;
+            --box-bg: #1B1D21;
+            --box-shadow: rgba(0,0,0,0.5);
+            --border-std: #5f6368;
+            
+            --input-bg: #303134; 
+            --input-text: #E8EAED;
+            --input-border: #5f6368;
+            
+            --btn-bg: #303134;
+            --btn-text: #E8EAED;
+            --btn-border: #5f6368;
+            --del-btn-bg: #3c1f1f;
+            --del-btn-text: #f28b82;
+            
+            --calc-btn-bg: #6D9DC5; 
+            --calc-btn-text: #1a1a1a;
+            
+            --result-bg: #1B1D21;
+            --winner-hl-bg: #3c2f2f;
+            --winner-hl-border: #f28b82;
+            --winner-text: #f28b82;
+            --detail-text: #9aa0a6;
+            
+            --label-color: #9aa0a6;
+
+            /* ダークモード時のモーダル */
+            --modal-bg: rgba(0,0,0,0.7);
+            --modal-content-bg: #2d2e30;
+            --history-item-border: #444;
+        }
+
+        /* ==== 全体のスタイル ==== */
+        body {
+            font-family: "Google Sans", Roboto, -apple-system, BlinkMacSystemFont, sans-serif;
+            text-align: center;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            padding: 20px;
+            margin: 0;
+            padding-bottom: 80px;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        h2 { 
+            color: var(--title-color); 
+            margin-bottom: 20px; 
+            margin-top: 10px;
+        }
+        
+        /* アイコンボタン共通設定 */
+        .icon-btn {
+            position: absolute;
+            top: 15px;
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            padding: 5px;
+            border-radius: 50%;
+            transition: transform 0.2s;
+            z-index: 10;
+        }
+        .icon-btn:active { transform: scale(0.8); }
+
+        /* テーマ切り替え（右上） */
+        #theme-toggle { right: 15px; }
+
+        /* 履歴ボタン（左上） */
+        #history-btn { left: 15px; }
+
+        #product-list { margin-bottom: 10px; }
+
+        .product-box {
+            display: flex;
+            align-items: center;
+            background: var(--box-bg);
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 15px;
+            box-shadow: 0 1px 3px var(--box-shadow);
+            border-left: 6px solid var(--border-std);
+            transition: background-color 0.3s, border 0.3s;
+        }
+
+        .winner-bg {
+            background-color: var(--winner-hl-bg) !important;
+            border: 1px solid var(--winner-hl-border);
+        }
+        
+        .box-label {
+            font-weight: bold;
+            font-size: 1.0em;
+            color: var(--label-color);
+            writing-mode: vertical-rl;
+            text-orientation: upright;
+            letter-spacing: 2px;
+            margin-right: 15px;
+            margin-left: 5px;
+            min-width: 1.5em;
+        }
+
+        .input-area {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        input {
+            width: 90%;
+            padding: 12px;
+            font-size: 16px;
+            border: 1px solid var(--input-border);
+            border-radius: 4px;
+            background-color: var(--input-bg);
+            color: var(--input-text);
+            transition: background-color 0.3s;
+        }
+
+        .control-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .sub-btn {
+            padding: 8px 24px;
+            font-size: 14px;
+            border-radius: 18px;
+            cursor: pointer;
+            border: 1px solid var(--btn-border);
+            color: var(--btn-text);
+            background-color: var(--btn-bg);
+            transition: background-color 0.3s;
+            font-weight: 500;
+        }
+        #del-btn {
+            background-color: var(--del-btn-bg);
+            color: var(--del-btn-text);
+            border-color: transparent;
+        }
+
+        #calc-btn {
+            background-color: var(--calc-btn-bg);
+            color: var(--calc-btn-text);
+            border: none;
+            padding: 15px 40px;
+            font-size: 16px;
+            border-radius: 28px;
+            cursor: pointer;
+            width: 100%;
+            font-weight: bold;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+            transition: background-color 0.3s;
+            letter-spacing: 1px;
+        }
+        #calc-btn:active { transform: scale(0.98); opacity: 0.9; }
+
+        #result-area {
+            margin-top: 25px;
+            padding: 20px;
+            font-weight: bold;
+            font-size: 18px;
+            background-color: var(--result-bg);
+            border: 1px solid var(--border-std);
+            border-radius: 8px;
+            display: none;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+            line-height: 1.6;
+        }
+        .winner-text { 
+            color: var(--winner-text); 
+            font-size: 1.3em; 
+            display:block; 
+            margin-bottom:10px; 
+        }
+        .detail-text { 
+            color: var(--detail-text); 
+            font-size: 0.9em; 
+            font-weight: normal; 
+            white-space: pre-line; 
+        }
+
+        /* ==== 履歴モーダルのスタイル ==== */
+        #history-modal {
+            display: none; /* 最初は隠す */
+            position: fixed;
+            z-index: 100;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: var(--modal-bg);
+            backdrop-filter: blur(2px);
+        }
+        .modal-content {
+            background-color: var(--modal-content-bg);
+            margin: 10% auto;
+            padding: 20px;
+            border-radius: 15px;
+            width: 85%;
+            max-width: 400px;
+            max-height: 70%;
+            overflow-y: auto;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            text-align: left;
+            position: relative;
+        }
+        .close-btn {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            font-size: 28px;
+            font-weight: bold;
+            color: #aaa;
+            cursor: pointer;
+            background: none;
+            border: none;
+        }
+        .history-list {
+            list-style: none;
+            padding: 0;
+            margin-top: 10px;
+        }
+        .history-item {
+            padding: 15px;
+            border-bottom: 1px solid var(--history-item-border);
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        .history-item:hover {
+            opacity: 0.8;
+        }
+        .history-date {
+            font-size: 0.8em;
+            color: var(--label-color);
+            margin-bottom: 5px;
+        }
+        .history-summary {
+            font-weight: bold;
+            color: var(--text-color);
+            font-size: 1.1em;
+        }
+        .history-detail {
+            font-size: 0.85em;
+            color: var(--detail-text);
+            margin-top: 5px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        #clear-history {
+            display: block;
+            margin: 20px auto 0;
+            background: none;
+            border: 1px solid var(--del-btn-text);
+            color: var(--del-btn-text);
+            padding: 8px 15px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+
+    <button id="history-btn" class="icon-btn">🕒</button>
+    <button id="theme-toggle" class="icon-btn">🌙</button>
+
+    <h2>🛒 どっちがお得？</h2>
+
+    <div id="product-list">
+        </div>
+
+    <div class="control-buttons">
+        <button id="add-btn" class="sub-btn" onclick="addProduct()">＋ 追加</button>
+        <button id="del-btn" class="sub-btn" onclick="removeProduct()">－ 削除</button>
+    </div>
+
+    <button id="calc-btn" onclick="calculate()">計算する！</button>
+
+    <div id="result-area"></div>
+
+    <div id="history-modal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeHistory()">&times;</span>
+            <h3 style="margin-top:0; color:var(--text-color);">計算履歴</h3>
+            <div id="history-list-container" class="history-list"></div>
+            <button id="clear-history" onclick="clearHistory()">履歴を全て消去</button>
+        </div>
+    </div>
+
+    <script>
+        var COLORS = ['#d65b5b', '#5f9ea0', '#bfb050', '#789eeb', '#cc8e35', '#9c88cc'];
+        var CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+
+        window.onload = function() {
+            var savedTheme = localStorage.getItem('appTheme');
+            if (savedTheme === 'dark') {
+                document.body.setAttribute('data-theme', 'dark');
+                document.getElementById('theme-toggle').textContent = '☀️';
+            }
+            addProduct();
+            addProduct();
+        };
+
+        // テーマ切り替え
+        document.getElementById('theme-toggle').onclick = function() {
+            var body = document.body;
+            var btn = document.getElementById('theme-toggle');
+
+            if (body.hasAttribute('data-theme')) {
+                body.removeAttribute('data-theme');
+                btn.textContent = '🌙';
+                localStorage.setItem('appTheme', 'light');
+            } else {
+                body.setAttribute('data-theme', 'dark');
+                btn.textContent = '☀️';
+                localStorage.setItem('appTheme', 'dark');
+            }
+        };
+
+        // 履歴ボタン
+        document.getElementById('history-btn').onclick = function() {
+            renderHistory();
+            document.getElementById('history-modal').style.display = "block";
+        };
+
+        function closeHistory() {
+            document.getElementById('history-modal').style.display = "none";
+        }
+
+        // モーダルの外側クリックで閉じる
+        window.onclick = function(event) {
+            var modal = document.getElementById('history-modal');
+            if (event.target == modal) {
+                closeHistory();
+            }
+        }
+
+        function addProduct() {
+            var list = document.getElementById('product-list');
+            var index = list.children.length;
+            var char = CHARS.charAt(index % 26);
+            var color = COLORS[index % COLORS.length];
+
+            var div = document.createElement('div');
+            div.className = 'product-box';
+            div.style.borderLeftColor = color;
+            
+            var html = '';
+            html += '<div class="box-label">商品' + char + '</div>';
+            html += '<div class="input-area">';
+            html += '<input type="number" class="price" placeholder="値段 (円)">';
+            html += '<input type="number" class="amount" placeholder="量 (g / 個)">';
+            html += '</div>';
+            
+            div.innerHTML = html;
+            list.appendChild(div);
+        }
+
+        function removeProduct() {
+            var list = document.getElementById('product-list');
+            if (list.children.length > 2) {
+                list.removeChild(list.lastElementChild);
+            } else {
+                alert("これ以上は減らせません");
+            }
+        }
+
+        function calculate() {
+            var boxes = document.getElementsByClassName('product-box');
+            var minPrice = 99999999;
+            var winnerNames = [];
+            var winnerElements = [];
+            var details = "";
+            
+            // 履歴保存用のデータリスト
+            var currentData = [];
+
+            for (var i = 0; i < boxes.length; i++) {
+                var box = boxes[i];
+                var inputs = box.getElementsByTagName('input');
+                var priceVal = inputs[0].value;
+                var amountVal = inputs[1].value;
+                var name = "商品" + CHARS.charAt(i % 26);
+
+                box.classList.remove('winner-bg');
+
+                if (priceVal == "" || amountVal == "") {
+                    alert(name + " の数字を入れてください");
+                    return;
+                }
+                
+                // データ保存
+                currentData.push({
+                    price: priceVal,
+                    amount: amountVal,
+                    name: name
+                });
+
+                var p = parseFloat(priceVal);
+                var a = parseFloat(amountVal);
+                var unitPrice = p / a;
+
+                details += name + ": 単価 " + unitPrice.toFixed(2) + "円\n";
+
+                if (unitPrice < minPrice) {
+                    minPrice = unitPrice;
+                    winnerNames = [];
+                    winnerNames.push(name);
+                    winnerElements = [];
+                    winnerElements.push(box);
+                } else if (unitPrice == minPrice) {
+                    winnerNames.push(name);
+                    winnerElements.push(box);
+                }
+            }
+
+            var resultArea = document.getElementById('result-area');
+            resultArea.style.display = "block";
+
+            var winText = winnerNames.join(" と ");
+            var finalHtml = '<div class="winner-text">🎉 ' + winText + ' がお得！</div>';
+            finalHtml += '<div class="detail-text">' + details + '</div>';
+            
+            resultArea.innerHTML = finalHtml;
+
+            for (var j = 0; j < winnerElements.length; j++) {
+                winnerElements[j].classList.add('winner-bg');
+            }
+
+            // ★ここで履歴に保存
+            saveHistory(winText, currentData);
+        }
+
+        // 履歴を保存する機能
+        function saveHistory(winner, data) {
+            var history = JSON.parse(localStorage.getItem('calcHistory') || '[]');
+            var now = new Date();
+            var dateStr = (now.getMonth()+1) + "/" + now.getDate() + " " + now.getHours() + ":" + String(now.getMinutes()).padStart(2, '0');
+
+            // データの概要を作る（例: 298円 vs 350円...）
+            var summary = data.map(function(d){ return d.price + "円" }).join(" vs ");
+
+            var newItem = {
+                date: dateStr,
+                winner: winner,
+                summary: summary,
+                data: data // 復元用データ
+            };
+
+            // 先頭に追加
+            history.unshift(newItem);
+            
+            // 最大20件まで保存
+            if (history.length > 20) {
+                history.pop();
+            }
+
+            localStorage.setItem('calcHistory', JSON.stringify(history));
+        }
+
+        // 履歴を表示する機能
+        function renderHistory() {
+            var history = JSON.parse(localStorage.getItem('calcHistory') || '[]');
+            var container = document.getElementById('history-list-container');
+            container.innerHTML = "";
+
+            if (history.length === 0) {
+                container.innerHTML = "<div style='padding:20px; color:var(--detail-text);'>まだ履歴がありません</div>";
+                return;
+            }
+
+            history.forEach(function(item, index) {
+                var div = document.createElement('div');
+                div.className = 'history-item';
+                div.onclick = function() { restoreHistory(index); };
+                
+                var html = '<div class="history-date">' + item.date + '</div>';
+                html += '<div class="history-summary">🏆 ' + item.winner + '</div>';
+                html += '<div class="history-detail">' + item.summary + '</div>';
+                
+                div.innerHTML = html;
+                container.appendChild(div);
+            });
+        }
+
+        // 履歴を復元する機能
+        function restoreHistory(index) {
+            var history = JSON.parse(localStorage.getItem('calcHistory') || '[]');
+            var item = history[index];
+            var data = item.data;
+
+            // 1. 今のリストをクリア
+            var list = document.getElementById('product-list');
+            list.innerHTML = "";
+
+            // 2. データに合わせてボックスを作る
+            data.forEach(function(d, i) {
+                // addProductのロジックをここで再現して値を入れる
+                var char = CHARS.charAt(i % 26);
+                var color = COLORS[i % COLORS.length];
+
+                var div = document.createElement('div');
+                div.className = 'product-box';
+                div.style.borderLeftColor = color;
+                
+                var html = '';
+                html += '<div class="box-label">商品' + char + '</div>';
+                html += '<div class="input-area">';
+                html += '<input type="number" class="price" placeholder="値段 (円)" value="' + d.price + '">';
+                html += '<input type="number" class="amount" placeholder="量 (g / 個)" value="' + d.amount + '">';
+                html += '</div>';
+                
+                div.innerHTML = html;
+                list.appendChild(div);
+            });
+
+            // 3. モーダルを閉じて計算実行
+            closeHistory();
+            calculate(); // これで保存もされちゃうけど、最新履歴として上がるのでOK
+        }
+
+        function clearHistory() {
+            if(confirm("履歴を全て消してもいいですか？")) {
+                localStorage.removeItem('calcHistory');
+                renderHistory();
+            }
+        }
+    </script>
+</body>
+</html>
