@@ -37,10 +37,17 @@
             
             --label-color: #5f6368;
 
-            /* モーダル（履歴画面）の色 */
+            /* モーダル */
             --modal-bg: rgba(0,0,0,0.5);
             --modal-content-bg: #fff;
             --history-item-border: #eee;
+
+            /* タブの色 */
+            --tab-bar-bg: #e0e0e0;
+            --tab-active-bg: #f5f5f5; /* 背景と同じ色 */
+            --tab-inactive-bg: #d0d0d0;
+            --tab-text: #555;
+            --tab-active-text: #202124;
         }
 
         /* ダークモード */
@@ -73,10 +80,16 @@
             
             --label-color: #9aa0a6;
 
-            /* ダークモード時のモーダル */
             --modal-bg: rgba(0,0,0,0.7);
             --modal-content-bg: #2d2e30;
             --history-item-border: #444;
+
+            /* ダークモードのタブ */
+            --tab-bar-bg: #151515;
+            --tab-active-bg: #202124;
+            --tab-inactive-bg: #2a2a2a;
+            --tab-text: #888;
+            --tab-active-text: #E8EAED;
         }
 
         /* ==== 全体のスタイル ==== */
@@ -93,11 +106,11 @@
 
         h2 { 
             color: var(--title-color); 
-            margin-bottom: 20px; 
+            margin-bottom: 15px; 
             margin-top: 10px;
         }
         
-        /* アイコンボタン共通設定 */
+        /* アイコンボタン */
         .icon-btn {
             position: absolute;
             top: 15px;
@@ -108,17 +121,86 @@
             padding: 5px;
             border-radius: 50%;
             transition: transform 0.2s;
-            z-index: 10;
+            z-index: 20;
         }
         .icon-btn:active { transform: scale(0.8); }
-
-        /* テーマ切り替え（右上） */
         #theme-toggle { right: 15px; }
-
-        /* 履歴ボタン（左上） */
         #history-btn { left: 15px; }
 
-        #product-list { margin-bottom: 10px; }
+        /* ==== タブUI ==== */
+        #tabs-container {
+            display: flex;
+            overflow-x: auto;
+            background-color: var(--tab-bar-bg);
+            padding: 5px 5px 0 5px;
+            border-radius: 8px 8px 0 0;
+            margin-bottom: 0;
+            scrollbar-width: none; /* スクロールバー消す */
+        }
+        #tabs-container::-webkit-scrollbar { display: none; }
+
+        .tab-btn {
+            background-color: var(--tab-inactive-bg);
+            color: var(--tab-text);
+            border: none;
+            padding: 10px 15px;
+            margin-right: 2px;
+            border-radius: 8px 8px 0 0;
+            cursor: pointer;
+            font-size: 14px;
+            white-space: nowrap;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: background-color 0.2s;
+        }
+        .tab-btn.active {
+            background-color: var(--tab-active-bg); /* 背景と一体化 */
+            color: var(--tab-active-text);
+            font-weight: bold;
+            padding-bottom: 12px; /* 少し伸ばして下の線と繋げる */
+            margin-bottom: -2px; /* 下のコンテナに被せる */
+            z-index: 5;
+        }
+        .tab-close {
+            font-size: 16px;
+            opacity: 0.6;
+            line-height: 1;
+            border-radius: 50%;
+            padding: 0 4px;
+        }
+        .tab-close:hover {
+            opacity: 1;
+            background-color: rgba(0,0,0,0.1);
+        }
+        #add-tab-btn {
+            background: none;
+            color: var(--tab-text);
+            font-size: 20px;
+            border: none;
+            cursor: pointer;
+            padding: 0 10px;
+            font-weight: bold;
+        }
+
+        /* コンテンツエリア（タブの中身） */
+        .tab-content {
+            display: none; /* デフォルト非表示 */
+            background-color: var(--bg-color); /* 背景色と同じ */
+            padding-top: 15px;
+            border-top: 2px solid var(--tab-active-bg); /* タブとの繋ぎ目 */
+        }
+        .tab-content.active {
+            display: block; /* アクティブなタブだけ表示 */
+            animation: fadeIn 0.3s;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        /* ==== 商品リストなど（共通） ==== */
+        .product-list { margin-bottom: 10px; }
 
         .product-box {
             display: flex;
@@ -185,13 +267,13 @@
             transition: background-color 0.3s;
             font-weight: 500;
         }
-        #del-btn {
+        .del-btn { /* IDからクラスに変更 */
             background-color: var(--del-btn-bg);
             color: var(--del-btn-text);
             border-color: transparent;
         }
 
-        #calc-btn {
+        .calc-btn { /* IDからクラスに変更 */
             background-color: var(--calc-btn-bg);
             color: var(--calc-btn-text);
             border: none;
@@ -205,9 +287,9 @@
             transition: background-color 0.3s;
             letter-spacing: 1px;
         }
-        #calc-btn:active { transform: scale(0.98); opacity: 0.9; }
+        .calc-btn:active { transform: scale(0.98); opacity: 0.9; }
 
-        #result-area {
+        .result-area {
             margin-top: 25px;
             padding: 20px;
             font-weight: bold;
@@ -232,9 +314,9 @@
             white-space: pre-line; 
         }
 
-        /* ==== 履歴モーダルのスタイル ==== */
+        /* ==== 履歴モーダル ==== */
         #history-modal {
-            display: none; /* 最初は隠す */
+            display: none;
             position: fixed;
             z-index: 100;
             left: 0;
@@ -279,9 +361,7 @@
             cursor: pointer;
             transition: background-color 0.2s;
         }
-        .history-item:hover {
-            opacity: 0.8;
-        }
+        .history-item:hover { opacity: 0.8; }
         .history-date {
             font-size: 0.8em;
             color: var(--label-color);
@@ -320,17 +400,12 @@
 
     <h2>🛒 どっちがお得？</h2>
 
-    <div id="product-list">
-        </div>
-
-    <div class="control-buttons">
-        <button id="add-btn" class="sub-btn" onclick="addProduct()">＋ 追加</button>
-        <button id="del-btn" class="sub-btn" onclick="removeProduct()">－ 削除</button>
+    <div id="tabs-container">
+        <button id="add-tab-btn" onclick="addNewTab()">＋</button>
     </div>
 
-    <button id="calc-btn" onclick="calculate()">計算する！</button>
-
-    <div id="result-area"></div>
+    <div id="contents-container">
+        </div>
 
     <div id="history-modal">
         <div class="modal-content">
@@ -344,6 +419,8 @@
     <script>
         var COLORS = ['#d65b5b', '#5f9ea0', '#bfb050', '#789eeb', '#cc8e35', '#9c88cc'];
         var CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        
+        var tabCounter = 1; // タブの連番用
 
         window.onload = function() {
             var savedTheme = localStorage.getItem('appTheme');
@@ -351,8 +428,8 @@
                 document.body.setAttribute('data-theme', 'dark');
                 document.getElementById('theme-toggle').textContent = '☀️';
             }
-            addProduct();
-            addProduct();
+            // 最初に1つタブを作る
+            addNewTab(); 
         };
 
         // テーマ切り替え
@@ -371,27 +448,96 @@
             }
         };
 
-        // 履歴ボタン
-        document.getElementById('history-btn').onclick = function() {
-            renderHistory();
-            document.getElementById('history-modal').style.display = "block";
-        };
+        /* ==== タブ機能 ==== */
+        function addNewTab() {
+            var tabId = 'tab-' + tabCounter;
+            var contentId = 'content-' + tabCounter;
+            var tabNum = tabCounter;
+            tabCounter++;
 
-        function closeHistory() {
-            document.getElementById('history-modal').style.display = "none";
+            // 1. タブボタンを作成
+            var btn = document.createElement('button');
+            btn.className = 'tab-btn';
+            btn.id = tabId;
+            btn.onclick = function(e) { 
+                // ×ボタンを押したときは切り替えない
+                if(e.target.className !== 'tab-close') switchTab(tabId, contentId); 
+            };
+            
+            // タブ名と閉じるボタン
+            btn.innerHTML = '計算 ' + tabNum + ' <span class="tab-close" onclick="closeTab(\''+tabId+'\', \''+contentId+'\')">×</span>';
+            
+            var addBtn = document.getElementById('add-tab-btn');
+            document.getElementById('tabs-container').insertBefore(btn, addBtn);
+
+            // 2. コンテンツエリアを作成（前のコードのHTMLをここに流し込む）
+            var contentDiv = document.createElement('div');
+            contentDiv.className = 'tab-content';
+            contentDiv.id = contentId;
+            
+            var html = '';
+            html += '<div class="product-list"></div>'; // クラスに変更
+            html += '<div class="control-buttons">';
+            html += '<button class="sub-btn" onclick="addProduct(this)">＋ 追加</button>';
+            html += '<button class="sub-btn del-btn" onclick="removeProduct(this)">－ 削除</button>';
+            html += '</div>';
+            html += '<button class="calc-btn" onclick="calculate(this)">計算する！</button>';
+            html += '<div class="result-area"></div>';
+
+            contentDiv.innerHTML = html;
+            document.getElementById('contents-container').appendChild(contentDiv);
+
+            // 3. 初期商品を追加（AとB）
+            // このコンテンツ内のリストを指定して追加する
+            var list = contentDiv.querySelector('.product-list');
+            addItemToBox(list); // A
+            addItemToBox(list); // B
+
+            // 4. 今作ったタブに切り替える
+            switchTab(tabId, contentId);
         }
 
-        // モーダルの外側クリックで閉じる
-        window.onclick = function(event) {
-            var modal = document.getElementById('history-modal');
-            if (event.target == modal) {
-                closeHistory();
+        function switchTab(tabId, contentId) {
+            // 全てのタブボタンを非アクティブに
+            var tabs = document.getElementsByClassName('tab-btn');
+            for(var i=0; i<tabs.length; i++) tabs[i].classList.remove('active');
+
+            // 全てのコンテンツを隠す
+            var contents = document.getElementsByClassName('tab-content');
+            for(var j=0; j<contents.length; j++) contents[j].classList.remove('active');
+
+            // 指定されたものをアクティブに
+            document.getElementById(tabId).classList.add('active');
+            document.getElementById(contentId).classList.add('active');
+        }
+
+        function closeTab(tabId, contentId) {
+            // 最後の1個は消せない
+            var tabs = document.getElementsByClassName('tab-btn');
+            if(tabs.length <= 1) {
+                alert("最後のタブは消せません");
+                return;
+            }
+            
+            // 要素を削除
+            document.getElementById(tabId).remove();
+            document.getElementById(contentId).remove();
+
+            // もし消したタブがアクティブだったら、残っている最初のタブを開く
+            if(document.getElementsByClassName('tab-btn active').length === 0) {
+                var firstTab = document.getElementsByClassName('tab-btn')[0];
+                // tab-1 -> content-1 のような対応関係を推測
+                // IDは 'tab-X' なので 'content-X' を作る
+                var num = firstTab.id.split('-')[1];
+                switchTab(firstTab.id, 'content-' + num);
             }
         }
 
-        function addProduct() {
-            var list = document.getElementById('product-list');
-            var index = list.children.length;
+        /* ==== 商品操作（アクティブなタブ内でのみ動くように修正） ==== */
+        
+        // 商品ボックスのHTML生成用関数（共通化）
+        function addItemToBox(listElement) {
+            var index = listElement.children.length;
             var char = CHARS.charAt(index % 26);
             var color = COLORS[index % COLORS.length];
 
@@ -407,11 +553,20 @@
             html += '</div>';
             
             div.innerHTML = html;
-            list.appendChild(div);
+            listElement.appendChild(div);
         }
 
-        function removeProduct() {
-            var list = document.getElementById('product-list');
+        // ボタンが押されたとき、そのボタンが含まれるタブを見つけて処理する
+        function addProduct(btn) {
+            // 親の親...を辿って .tab-content を探す
+            var contentDiv = btn.closest('.tab-content');
+            var list = contentDiv.querySelector('.product-list');
+            addItemToBox(list);
+        }
+
+        function removeProduct(btn) {
+            var contentDiv = btn.closest('.tab-content');
+            var list = contentDiv.querySelector('.product-list');
             if (list.children.length > 2) {
                 list.removeChild(list.lastElementChild);
             } else {
@@ -419,14 +574,15 @@
             }
         }
 
-        function calculate() {
-            var boxes = document.getElementsByClassName('product-box');
+        function calculate(btn) {
+            // 現在のタブ内だけで計算する
+            var contentDiv = btn.closest('.tab-content');
+            var boxes = contentDiv.getElementsByClassName('product-box');
+            
             var minPrice = 99999999;
             var winnerNames = [];
             var winnerElements = [];
             var details = "";
-            
-            // 履歴保存用のデータリスト
             var currentData = [];
 
             for (var i = 0; i < boxes.length; i++) {
@@ -443,7 +599,6 @@
                     return;
                 }
                 
-                // データ保存
                 currentData.push({
                     price: priceVal,
                     amount: amountVal,
@@ -468,7 +623,7 @@
                 }
             }
 
-            var resultArea = document.getElementById('result-area');
+            var resultArea = contentDiv.querySelector('.result-area');
             resultArea.style.display = "block";
 
             var winText = winnerNames.join(" と ");
@@ -481,78 +636,69 @@
                 winnerElements[j].classList.add('winner-bg');
             }
 
-            // ★ここで履歴に保存
             saveHistory(winText, currentData);
         }
 
-        // 履歴を保存する機能
+        /* ==== 履歴系（ほぼ変更なし、復元時のターゲット修正のみ） ==== */
         function saveHistory(winner, data) {
             var history = JSON.parse(localStorage.getItem('calcHistory') || '[]');
             var now = new Date();
             var dateStr = (now.getMonth()+1) + "/" + now.getDate() + " " + now.getHours() + ":" + String(now.getMinutes()).padStart(2, '0');
-
-            // データの概要を作る（例: 298円 vs 350円...）
             var summary = data.map(function(d){ return d.price + "円" }).join(" vs ");
 
             var newItem = {
                 date: dateStr,
                 winner: winner,
                 summary: summary,
-                data: data // 復元用データ
+                data: data
             };
-
-            // 先頭に追加
             history.unshift(newItem);
-            
-            // 最大20件まで保存
-            if (history.length > 20) {
-                history.pop();
-            }
-
+            if (history.length > 20) history.pop();
             localStorage.setItem('calcHistory', JSON.stringify(history));
         }
 
-        // 履歴を表示する機能
+        document.getElementById('history-btn').onclick = function() {
+            renderHistory();
+            document.getElementById('history-modal').style.display = "block";
+        };
+        function closeHistory() { document.getElementById('history-modal').style.display = "none"; }
+        window.onclick = function(event) {
+            if (event.target == document.getElementById('history-modal')) closeHistory();
+        }
+
         function renderHistory() {
             var history = JSON.parse(localStorage.getItem('calcHistory') || '[]');
             var container = document.getElementById('history-list-container');
             container.innerHTML = "";
-
             if (history.length === 0) {
                 container.innerHTML = "<div style='padding:20px; color:var(--detail-text);'>まだ履歴がありません</div>";
                 return;
             }
-
             history.forEach(function(item, index) {
                 var div = document.createElement('div');
                 div.className = 'history-item';
                 div.onclick = function() { restoreHistory(index); };
-                
                 var html = '<div class="history-date">' + item.date + '</div>';
                 html += '<div class="history-summary">🏆 ' + item.winner + '</div>';
                 html += '<div class="history-detail">' + item.summary + '</div>';
-                
                 div.innerHTML = html;
                 container.appendChild(div);
             });
         }
 
-        // 履歴を復元する機能
         function restoreHistory(index) {
             var history = JSON.parse(localStorage.getItem('calcHistory') || '[]');
             var item = history[index];
             var data = item.data;
 
-            // 1. 今のリストをクリア
-            var list = document.getElementById('product-list');
+            // 【重要】現在アクティブなタブを取得して、そこに復元する
+            var activeContent = document.querySelector('.tab-content.active');
+            var list = activeContent.querySelector('.product-list');
             list.innerHTML = "";
 
-            // 2. データに合わせてボックスを作る
             data.forEach(function(d, i) {
-                // addProductのロジックをここで再現して値を入れる
                 var char = CHARS.charAt(i % 26);
                 var color = COLORS[i % COLORS.length];
-
                 var div = document.createElement('div');
                 div.className = 'product-box';
                 div.style.borderLeftColor = color;
@@ -568,9 +714,11 @@
                 list.appendChild(div);
             });
 
-            // 3. モーダルを閉じて計算実行
             closeHistory();
-            calculate(); // これで保存もされちゃうけど、最新履歴として上がるのでOK
+            
+            // 計算ボタンをプログラムから押して、結果を表示させる
+            var calcBtn = activeContent.querySelector('.calc-btn');
+            calculate(calcBtn);
         }
 
         function clearHistory() {
