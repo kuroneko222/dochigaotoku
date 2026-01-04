@@ -44,7 +44,7 @@
 
             /* タブの色 */
             --tab-bar-bg: #e0e0e0;
-            --tab-active-bg: #f5f5f5; /* 背景と同じ色 */
+            --tab-active-bg: #f5f5f5;
             --tab-inactive-bg: #d0d0d0;
             --tab-text: #555;
             --tab-active-text: #202124;
@@ -84,7 +84,6 @@
             --modal-content-bg: #2d2e30;
             --history-item-border: #444;
 
-            /* ダークモードのタブ */
             --tab-bar-bg: #151515;
             --tab-active-bg: #202124;
             --tab-inactive-bg: #2a2a2a;
@@ -135,7 +134,7 @@
             padding: 5px 5px 0 5px;
             border-radius: 8px 8px 0 0;
             margin-bottom: 0;
-            scrollbar-width: none; /* スクロールバー消す */
+            scrollbar-width: none;
         }
         #tabs-container::-webkit-scrollbar { display: none; }
 
@@ -155,11 +154,11 @@
             transition: background-color 0.2s;
         }
         .tab-btn.active {
-            background-color: var(--tab-active-bg); /* 背景と一体化 */
+            background-color: var(--tab-active-bg);
             color: var(--tab-active-text);
             font-weight: bold;
-            padding-bottom: 12px; /* 少し伸ばして下の線と繋げる */
-            margin-bottom: -2px; /* 下のコンテナに被せる */
+            padding-bottom: 12px;
+            margin-bottom: -2px;
             z-index: 5;
         }
         .tab-close {
@@ -169,10 +168,7 @@
             border-radius: 50%;
             padding: 0 4px;
         }
-        .tab-close:hover {
-            opacity: 1;
-            background-color: rgba(0,0,0,0.1);
-        }
+        .tab-close:hover { opacity: 1; background-color: rgba(0,0,0,0.1); }
         #add-tab-btn {
             background: none;
             color: var(--tab-text);
@@ -183,15 +179,15 @@
             font-weight: bold;
         }
 
-        /* コンテンツエリア（タブの中身） */
+        /* コンテンツエリア */
         .tab-content {
-            display: none; /* デフォルト非表示 */
-            background-color: var(--bg-color); /* 背景色と同じ */
+            display: none;
+            background-color: var(--bg-color);
             padding-top: 15px;
-            border-top: 2px solid var(--tab-active-bg); /* タブとの繋ぎ目 */
+            border-top: 2px solid var(--tab-active-bg);
         }
         .tab-content.active {
-            display: block; /* アクティブなタブだけ表示 */
+            display: block;
             animation: fadeIn 0.3s;
         }
         @keyframes fadeIn {
@@ -199,7 +195,7 @@
             to { opacity: 1; }
         }
 
-        /* ==== 商品リストなど（共通） ==== */
+        /* ==== 商品リストなど ==== */
         .product-list { margin-bottom: 10px; }
 
         .product-box {
@@ -267,13 +263,13 @@
             transition: background-color 0.3s;
             font-weight: 500;
         }
-        .del-btn { /* IDからクラスに変更 */
+        .del-btn {
             background-color: var(--del-btn-bg);
             color: var(--del-btn-text);
             border-color: transparent;
         }
 
-        .calc-btn { /* IDからクラスに変更 */
+        .calc-btn {
             background-color: var(--calc-btn-bg);
             color: var(--calc-btn-text);
             border: none;
@@ -404,8 +400,7 @@
         <button id="add-tab-btn" onclick="addNewTab()">＋</button>
     </div>
 
-    <div id="contents-container">
-        </div>
+    <div id="contents-container"></div>
 
     <div id="history-modal">
         <div class="modal-content">
@@ -420,7 +415,7 @@
         var COLORS = ['#d65b5b', '#5f9ea0', '#bfb050', '#789eeb', '#cc8e35', '#9c88cc'];
         var CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
         
-        var tabCounter = 1; // タブの連番用
+        var tabCounter = 1; 
 
         window.onload = function() {
             var savedTheme = localStorage.getItem('appTheme');
@@ -428,7 +423,6 @@
                 document.body.setAttribute('data-theme', 'dark');
                 document.getElementById('theme-toggle').textContent = '☀️';
             }
-            // 最初に1つタブを作る
             addNewTab(); 
         };
 
@@ -455,28 +449,23 @@
             var tabNum = tabCounter;
             tabCounter++;
 
-            // 1. タブボタンを作成
             var btn = document.createElement('button');
             btn.className = 'tab-btn';
             btn.id = tabId;
             btn.onclick = function(e) { 
-                // ×ボタンを押したときは切り替えない
                 if(e.target.className !== 'tab-close') switchTab(tabId, contentId); 
             };
-            
-            // タブ名と閉じるボタン
             btn.innerHTML = '計算 ' + tabNum + ' <span class="tab-close" onclick="closeTab(\''+tabId+'\', \''+contentId+'\')">×</span>';
             
             var addBtn = document.getElementById('add-tab-btn');
             document.getElementById('tabs-container').insertBefore(btn, addBtn);
 
-            // 2. コンテンツエリアを作成（前のコードのHTMLをここに流し込む）
             var contentDiv = document.createElement('div');
             contentDiv.className = 'tab-content';
             contentDiv.id = contentId;
             
             var html = '';
-            html += '<div class="product-list"></div>'; // クラスに変更
+            html += '<div class="product-list"></div>';
             html += '<div class="control-buttons">';
             html += '<button class="sub-btn" onclick="addProduct(this)">＋ 追加</button>';
             html += '<button class="sub-btn del-btn" onclick="removeProduct(this)">－ 削除</button>';
@@ -487,55 +476,38 @@
             contentDiv.innerHTML = html;
             document.getElementById('contents-container').appendChild(contentDiv);
 
-            // 3. 初期商品を追加（AとB）
-            // このコンテンツ内のリストを指定して追加する
             var list = contentDiv.querySelector('.product-list');
-            addItemToBox(list); // A
-            addItemToBox(list); // B
+            addItemToBox(list); 
+            addItemToBox(list); 
 
-            // 4. 今作ったタブに切り替える
             switchTab(tabId, contentId);
         }
 
         function switchTab(tabId, contentId) {
-            // 全てのタブボタンを非アクティブに
             var tabs = document.getElementsByClassName('tab-btn');
             for(var i=0; i<tabs.length; i++) tabs[i].classList.remove('active');
-
-            // 全てのコンテンツを隠す
             var contents = document.getElementsByClassName('tab-content');
             for(var j=0; j<contents.length; j++) contents[j].classList.remove('active');
-
-            // 指定されたものをアクティブに
             document.getElementById(tabId).classList.add('active');
             document.getElementById(contentId).classList.add('active');
         }
 
         function closeTab(tabId, contentId) {
-            // 最後の1個は消せない
             var tabs = document.getElementsByClassName('tab-btn');
             if(tabs.length <= 1) {
                 alert("最後のタブは消せません");
                 return;
             }
-            
-            // 要素を削除
             document.getElementById(tabId).remove();
             document.getElementById(contentId).remove();
-
-            // もし消したタブがアクティブだったら、残っている最初のタブを開く
             if(document.getElementsByClassName('tab-btn active').length === 0) {
                 var firstTab = document.getElementsByClassName('tab-btn')[0];
-                // tab-1 -> content-1 のような対応関係を推測
-                // IDは 'tab-X' なので 'content-X' を作る
                 var num = firstTab.id.split('-')[1];
                 switchTab(firstTab.id, 'content-' + num);
             }
         }
 
-        /* ==== 商品操作（アクティブなタブ内でのみ動くように修正） ==== */
-        
-        // 商品ボックスのHTML生成用関数（共通化）
+        /* ==== 商品操作 ==== */
         function addItemToBox(listElement) {
             var index = listElement.children.length;
             var char = CHARS.charAt(index % 26);
@@ -556,9 +528,7 @@
             listElement.appendChild(div);
         }
 
-        // ボタンが押されたとき、そのボタンが含まれるタブを見つけて処理する
         function addProduct(btn) {
-            // 親の親...を辿って .tab-content を探す
             var contentDiv = btn.closest('.tab-content');
             var list = contentDiv.querySelector('.product-list');
             addItemToBox(list);
@@ -575,7 +545,6 @@
         }
 
         function calculate(btn) {
-            // 現在のタブ内だけで計算する
             var contentDiv = btn.closest('.tab-content');
             var boxes = contentDiv.getElementsByClassName('product-box');
             
@@ -639,12 +608,24 @@
             saveHistory(winText, currentData);
         }
 
-        /* ==== 履歴系（ほぼ変更なし、復元時のターゲット修正のみ） ==== */
+        /* ==== 履歴系（重複チェック追加） ==== */
         function saveHistory(winner, data) {
             var history = JSON.parse(localStorage.getItem('calcHistory') || '[]');
+            
+            // 比較用の要約テキストを作成（例：200円 vs 300円）
+            var summary = data.map(function(d){ return d.price + "円" }).join(" vs ");
+
+            // ★重複チェック★
+            // 履歴が1件以上あり、かつ直前の履歴と「勝者」「内容」が全く同じなら保存しない
+            if (history.length > 0) {
+                var lastItem = history[0];
+                if (lastItem.winner === winner && lastItem.summary === summary) {
+                    return; // ここで終了（保存しない）
+                }
+            }
+
             var now = new Date();
             var dateStr = (now.getMonth()+1) + "/" + now.getDate() + " " + now.getHours() + ":" + String(now.getMinutes()).padStart(2, '0');
-            var summary = data.map(function(d){ return d.price + "円" }).join(" vs ");
 
             var newItem = {
                 date: dateStr,
@@ -691,7 +672,6 @@
             var item = history[index];
             var data = item.data;
 
-            // 【重要】現在アクティブなタブを取得して、そこに復元する
             var activeContent = document.querySelector('.tab-content.active');
             var list = activeContent.querySelector('.product-list');
             list.innerHTML = "";
@@ -715,8 +695,6 @@
             });
 
             closeHistory();
-            
-            // 計算ボタンをプログラムから押して、結果を表示させる
             var calcBtn = activeContent.querySelector('.calc-btn');
             calculate(calcBtn);
         }
